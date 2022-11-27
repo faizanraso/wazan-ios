@@ -1,0 +1,15 @@
+export const colours = {
+  headerBlack: "#070707",
+  background: "#000000",
+  cardBackground: "#16181c",
+  primaryText: "#e6e9ea",
+  secondaryText: "#71767a",
+  linkText: "#1e9af0",
+  accent: "#1c9bef",
+  button: "#eff3f4",
+  buttonTextGrey: "#11161c",
+  buttonTextBlack: "#0f141a",
+  outline: "#1a1b1c",
+  inputBorder: "#323638",
+  placeholderText: "#71767a",
+};
