@@ -8,10 +8,28 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { colours } from "../../shared/colours";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../../firebase";
 
 export default function LogInScreen() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSignin = () => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user.email);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorMessage);
+      });
+  };
+
   return (
     <ScrollView style={styles.container}>
       <KeyboardAvoidingView
@@ -25,20 +43,24 @@ export default function LogInScreen() {
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Email"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
             style={styles.inputField}
             placeholderTextColor={colours.placeholderText}
-            autoCapitalize='none'
+            autoCapitalize="none"
           />
           <TextInput
             placeholder="Password"
+            value={password}
+            onChangeText={(text) => setPassword(text)}
             style={styles.inputField}
             placeholderTextColor={colours.placeholderText}
-            autoCapitalize='none'
+            autoCapitalize="none"
             secureTextEntry={true}
           />
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.submitButton}>
+          <TouchableOpacity style={styles.submitButton} onPress={handleSignin}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
         </View>
