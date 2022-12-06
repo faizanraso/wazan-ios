@@ -8,26 +8,42 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { colours } from "../../shared/colours";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../../firebase";
+import checkError from "./CheckError";
 
 export default function LogInScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const emailRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
 
   const handleSignin = () => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log(user.email);
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorMessage);
-      });
+    if (validateEmail(email)) {
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log(user.email);
+        })
+        .catch((error) => {
+          const errorMessage = checkError(error.code);
+          setErrorMessage(errorMessage);
+        });
+    }
+  };
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (emailRegex.test(email)) {
+      return true;
+    } else {
+      console.log("invalid email");
+      return false;
+    }
   };
 
   return (
@@ -48,6 +64,13 @@ export default function LogInScreen() {
             style={styles.inputField}
             placeholderTextColor={colours.placeholderText}
             autoCapitalize="none"
+            returnKeyType="next"
+            ref={emailRef}
+            onSubmitEditing={() => {
+              if (passwordRef.current !== null) {
+                passwordRef.current.focus();
+              }
+            }}
           />
           <TextInput
             placeholder="Password"
@@ -57,8 +80,16 @@ export default function LogInScreen() {
             placeholderTextColor={colours.placeholderText}
             autoCapitalize="none"
             secureTextEntry={true}
+            ref={passwordRef}
           />
         </View>
+        {errorMessage !== "" ? (
+          <View>
+            <Text>{errorMessage}</Text>
+          </View>
+        ) : (
+          <></>
+        )}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.submitButton} onPress={handleSignin}>
             <Text style={styles.buttonText}>Login</Text>

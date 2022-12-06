@@ -8,26 +8,38 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { colours } from "../../shared/colours";
 import { auth } from "../../../firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
+import checkError from "./CheckError";
 
 export default function SignUpScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const nameRef = useRef<TextInput>(null);
+  const emailRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
+  const confirmPasswordRef = useRef<TextInput>(null);
 
   const handleSignup = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
+        if (auth.currentUser != null) {
+          sendEmailVerification(auth.currentUser);
+        }
         console.log(user.email);
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorMessage);
+        const errorMessage = checkError(error.code);
+        setErrorMessage(errorMessage);
       });
   };
 
@@ -46,6 +58,13 @@ export default function SignUpScreen() {
             placeholder="Name"
             style={styles.inputField}
             placeholderTextColor={colours.placeholderText}
+            returnKeyType="next"
+            ref={nameRef}
+            onSubmitEditing={() => {
+              if (emailRef.current !== null) {
+                emailRef.current.focus();
+              }
+            }}
           />
           <TextInput
             placeholder="Email"
@@ -54,6 +73,13 @@ export default function SignUpScreen() {
             autoCapitalize="none"
             onChangeText={(text) => setEmail(text)}
             value={email}
+            returnKeyType="next"
+            ref={emailRef}
+            onSubmitEditing={() => {
+              if (passwordRef.current !== null) {
+                passwordRef.current.focus();
+              }
+            }}
           />
           <TextInput
             placeholder="Password"
@@ -61,6 +87,13 @@ export default function SignUpScreen() {
             placeholderTextColor={colours.placeholderText}
             autoCapitalize="none"
             secureTextEntry={true}
+            returnKeyType="next"
+            ref={passwordRef}
+            onSubmitEditing={() => {
+              if (confirmPasswordRef.current !== null) {
+                confirmPasswordRef.current.focus();
+              }
+            }}
           />
           <TextInput
             placeholder="Confirm password"
@@ -70,6 +103,7 @@ export default function SignUpScreen() {
             secureTextEntry={true}
             onChangeText={(text) => setPassword(text)}
             value={password}
+            ref={confirmPasswordRef}
           />
         </View>
         <View style={styles.buttonContainer}>

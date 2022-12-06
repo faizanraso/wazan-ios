@@ -2,10 +2,10 @@ import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
-import WelcomeScreen from "./src/screens/PreAuth/WelcomeScreen";
-import SignUpScreen from "./src/screens/PreAuth/SignUpScreen";
-import LogInScreen from "./src/screens/PreAuth/LogInScreen";
-import { colours } from "./src/shared/colours";
+import WelcomeScreen from "./WelcomeScreen";
+import SignUpScreen from "./SignUpScreen";
+import LogInScreen from "./LogInScreen";
+import { colours } from "../../shared/colours";
 
 export default function PreAuthNavigation() {
   const Stack = createNativeStackNavigator();

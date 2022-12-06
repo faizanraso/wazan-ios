@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet } from "react-native";
 import { auth } from "./firebase";
 import Home from "./src/screens/PostAuth/Home";
-import PreAuthNavigation from "./PreAuthNavigation";
+import PreAuthNavigation from "./src/screens/PreAuth/PreAuthNavigation";
 
 export default function App() {
   const [isSignedIn, setIsSignedIn] = useState(false);
