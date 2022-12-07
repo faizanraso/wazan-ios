@@ -22,7 +22,6 @@ export default function App() {
   if (!isSignedIn) {
     return <PreAuthNavigation />;
   }
-
   return <Home />;
 }
 

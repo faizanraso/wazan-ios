@@ -7,8 +7,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from "react-native";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { colours } from "../../shared/colours";
 import { auth } from "../../../firebase";
 import {
@@ -18,8 +19,10 @@ import {
 import checkError from "./CheckError";
 
 export default function SignUpScreen() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const nameRef = useRef<TextInput>(null);
@@ -27,20 +30,50 @@ export default function SignUpScreen() {
   const passwordRef = useRef<TextInput>(null);
   const confirmPasswordRef = useRef<TextInput>(null);
 
-  const handleSignup = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        if (auth.currentUser != null) {
-          sendEmailVerification(auth.currentUser);
-        }
-        console.log(user.email);
-      })
-      .catch((error) => {
-        const errorMessage = checkError(error.code);
-        setErrorMessage(errorMessage);
-      });
+  const handleSignup = async () => {
+    if (password !== confirmPassword) {
+      setErrorMessage(checkError("password/matching-error"));
+      return;
+    }
+
+    if (!checkFieldsEntered()) {
+      setErrorMessage(checkError("missing-fields"));
+      return;
+    }
+
+    try {
+      const userCredentials = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredentials.user;
+      if (auth.currentUser != null) {
+        sendEmailVerification(auth.currentUser);
+      }
+      console.log(user.email);
+    } catch (error: any) {
+      const errorMessage = checkError(error.code);
+      console.log(error.code);
+      setErrorMessage(errorMessage);
+    }
+  };
+
+  //used to return error message, if any
+  useEffect(() => {
+    if (errorMessage) {
+      Alert.alert("Error", errorMessage);
+    }
+    setErrorMessage("");
+  }, [errorMessage]);
+
+  //make sure all fields are filled
+  const checkFieldsEntered = () => {
+    if (name && email && password && confirmPassword) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   return (
@@ -58,7 +91,12 @@ export default function SignUpScreen() {
             placeholder="Name"
             style={styles.inputField}
             placeholderTextColor={colours.placeholderText}
+            onChangeText={(text) => {
+              setName(text);
+            }}
+            value={name}
             returnKeyType="next"
+            cursorColor={colours.accent}
             ref={nameRef}
             onSubmitEditing={() => {
               if (emailRef.current !== null) {
@@ -74,6 +112,7 @@ export default function SignUpScreen() {
             onChangeText={(text) => setEmail(text)}
             value={email}
             returnKeyType="next"
+            cursorColor={colours.accent}
             ref={emailRef}
             onSubmitEditing={() => {
               if (passwordRef.current !== null) {
@@ -88,6 +127,11 @@ export default function SignUpScreen() {
             autoCapitalize="none"
             secureTextEntry={true}
             returnKeyType="next"
+            cursorColor={colours.accent}
+            onChangeText={(text) => {
+              setPassword(text);
+            }}
+            value={password}
             ref={passwordRef}
             onSubmitEditing={() => {
               if (confirmPasswordRef.current !== null) {
@@ -101,14 +145,15 @@ export default function SignUpScreen() {
             placeholderTextColor={colours.placeholderText}
             autoCapitalize="none"
             secureTextEntry={true}
-            onChangeText={(text) => setPassword(text)}
-            value={password}
+            onChangeText={(text) => setConfirmPassword(text)}
+            value={confirmPassword}
+            cursorColor={colours.accent}
             ref={confirmPasswordRef}
           />
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.submitButton} onPress={handleSignup}>
-            <Text style={styles.buttonText}>Let's do this</Text>
+            <Text style={styles.buttonText}>Sign up</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -145,27 +190,27 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
     fontWeight: "400",
-    color: "#ffffff",
+    color: colours.accent,
     width: "88%",
     borderBottomColor: colours.inputBorder,
   },
+  buttonContainer: {
+    alignItems: "center",
+  },
   submitButton: {
     alignItems: "center",
-    width: "40%",
+    width: "88%",
     backgroundColor: colours.accent,
     padding: 13,
-    borderRadius: 30,
-    borderColor: colours.outline,
+    borderRadius: 25,
+    borderColor: colours.accent,
     borderWidth: 2,
     marginTop: 20,
-    marginRight: "6%",
+    marginHorizontal: 12,
   },
   buttonText: {
-    fontWeight: "500",
+    fontWeight: "700",
     fontSize: 14,
-    color: "#fffff",
-  },
-  buttonContainer: {
-    alignItems: "flex-end",
+    color: "#ffffff",
   },
 });

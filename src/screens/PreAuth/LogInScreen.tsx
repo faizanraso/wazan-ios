@@ -7,8 +7,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from "react-native";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { colours } from "../../shared/colours";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../../firebase";
@@ -22,29 +23,27 @@ export default function LogInScreen() {
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
 
-  const handleSignin = () => {
-    if (validateEmail(email)) {
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          console.log(user.email);
-        })
-        .catch((error) => {
-          const errorMessage = checkError(error.code);
-          setErrorMessage(errorMessage);
-        });
+  const handleSignin = async () => {
+    try {
+      const userCredentials = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredentials.user;
+      console.log(user.email);
+    } catch (error: any) {
+      const errorMessage = checkError(error.code);
+      setErrorMessage(errorMessage);
+      console.log(error.code);
     }
   };
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    if (emailRegex.test(email)) {
-      return true;
-    } else {
-      console.log("invalid email");
-      return false;
+  useEffect(() => {
+    if (errorMessage) {
+      Alert.alert("Error", errorMessage);
     }
-  };
+  }, [errorMessage]);
 
   return (
     <ScrollView style={styles.container}>
@@ -65,6 +64,7 @@ export default function LogInScreen() {
             placeholderTextColor={colours.placeholderText}
             autoCapitalize="none"
             returnKeyType="next"
+            cursorColor={colours.accent}
             ref={emailRef}
             onSubmitEditing={() => {
               if (passwordRef.current !== null) {
@@ -80,20 +80,29 @@ export default function LogInScreen() {
             placeholderTextColor={colours.placeholderText}
             autoCapitalize="none"
             secureTextEntry={true}
+            cursorColor={colours.accent}
             ref={passwordRef}
           />
         </View>
-        {errorMessage !== "" ? (
-          <View>
-            <Text>{errorMessage}</Text>
+        <View style={styles.bottomContainer}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={
+                email !== "" && password !== ""
+                  ? styles.submitButton
+                  : styles.disabledSubmitButton
+              }
+              disabled={email !== "" && password !== "" ? false : true}
+              onPress={handleSignin}
+            >
+              <Text style={styles.buttonText}>Log in</Text>
+            </TouchableOpacity>
           </View>
-        ) : (
-          <></>
-        )}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.submitButton} onPress={handleSignin}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
+          <View style={styles.forgotContainer}>
+            <TouchableOpacity>
+              <Text style={styles.forgotText}>Forgot password?</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </ScrollView>
@@ -129,27 +138,53 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
     fontWeight: "400",
-    color: "#ffffff",
+    color: colours.accent,
     width: "88%",
     borderBottomColor: colours.inputBorder,
   },
-  submitButton: {
-    alignItems: "center",
-    width: "40%",
-    backgroundColor: colours.accent,
-    padding: 13,
-    borderRadius: 30,
-    borderColor: colours.outline,
-    borderWidth: 2,
-    marginTop: 20,
-    marginRight: "6%",
-  },
-  buttonText: {
-    fontWeight: "500",
-    fontSize: 14,
-    color: "#fffff",
+  bottomContainer: {
+    flex: 1,
+    marginTop: "5%",
   },
   buttonContainer: {
-    alignItems: "flex-end",
+    alignItems: "center",
+  },
+  submitButton: {
+    alignItems: "center",
+    width: "88%",
+    backgroundColor: colours.primaryBackground,
+    padding: 13,
+    borderRadius: 25,
+    borderColor: colours.primaryBackground,
+    borderWidth: 2,
+    marginTop: 20,
+    marginHorizontal: 12,
+  },
+  disabledSubmitButton: {
+    alignItems: "center",
+    width: "88%",
+    backgroundColor: colours.disabledPrimaryBackground,
+    padding: 13,
+    borderRadius: 25,
+    borderColor: colours.disabledPrimaryBackground,
+    borderWidth: 2,
+    marginTop: 20,
+    marginHorizontal: 12,
+    color: colours.disabledPrimaryText,
+  },
+  buttonText: {
+    fontWeight: "700",
+    fontSize: 14,
+  },
+  forgotContainer: {
+    alignItems: "center",
+    padding: "5%",
+    marginTop: "3%",
+  },
+  forgotText: {
+    fontWeight: "700",
+    fontSize: 15,
+    textDecorationLine: "underline",
+    color: "white",
   },
 });

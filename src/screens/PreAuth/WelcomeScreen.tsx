@@ -75,13 +75,13 @@ const styles = StyleSheet.create({
   loginContainer: {
     position: "absolute",
     bottom: 1,
-    marginBottom: 40,
+    marginBottom: 30,
     marginLeft: "10%",
   },
   loginText: {
     color: colours.secondaryText,
   },
   loginTextLink: {
-    color: colours.linkText,
+    color: colours.accent,
   },
 });
