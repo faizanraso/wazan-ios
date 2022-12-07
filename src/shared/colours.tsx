@@ -14,4 +14,6 @@ export const colours = {
   outline: "#1a1b1c",
   inputBorder: "#323638",
   placeholderText: "#71767a",
+  tabBorder: "#2e3032",
+  tabIcons: "#d9d9d9",
 };

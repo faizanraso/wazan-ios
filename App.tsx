@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect } from "react";
 import { StyleSheet } from "react-native";
 import { auth } from "./firebase";
-import Home from "./src/screens/PostAuth/Home";
+import PostAuthNavigation from "./src/screens/PostAuth/PostAuthNavigation";
 import PreAuthNavigation from "./src/screens/PreAuth/PreAuthNavigation";
 
 export default function App() {
@@ -22,7 +22,7 @@ export default function App() {
   if (!isSignedIn) {
     return <PreAuthNavigation />;
   }
-  return <Home />;
+  return <PostAuthNavigation />;
 }
 
 const styles = StyleSheet.create({});

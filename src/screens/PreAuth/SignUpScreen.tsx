@@ -15,6 +15,7 @@ import { auth } from "../../../firebase";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
+  updateProfile,
 } from "firebase/auth";
 import checkError from "./CheckError";
 
@@ -50,8 +51,8 @@ export default function SignUpScreen() {
       const user = userCredentials.user;
       if (auth.currentUser != null) {
         sendEmailVerification(auth.currentUser);
+        updateProfile(auth.currentUser, { displayName: name });
       }
-      console.log(user.email);
     } catch (error: any) {
       const errorMessage = checkError(error.code);
       console.log(error.code);

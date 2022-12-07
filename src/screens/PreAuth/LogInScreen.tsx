@@ -31,7 +31,6 @@ export default function LogInScreen() {
         password
       );
       const user = userCredentials.user;
-      console.log(user.email);
     } catch (error: any) {
       const errorMessage = checkError(error.code);
       setErrorMessage(errorMessage);
@@ -43,6 +42,7 @@ export default function LogInScreen() {
     if (errorMessage) {
       Alert.alert("Error", errorMessage);
     }
+    setErrorMessage("");
   }, [errorMessage]);
 
   return (

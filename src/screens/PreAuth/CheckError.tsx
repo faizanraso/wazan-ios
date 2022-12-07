@@ -22,6 +22,19 @@ const checkError = (errorMessage: string) => {
     case "missing-fields":
       message = "Please fill in all fields to register.";
       break;
+    case "auth/email-already-in-use":
+      message =
+        "Looks like that email is already in use. Try signing in instead?";
+      break;
+    case "auth/invalid-display-name":
+      message = "Invalid name entered.";
+      break;
+    case "auth/wrong-password":
+      message = "Invalid password. Please try again."
+      break;
+    case "auth/too-many-requests":
+      message = "You've tried logging in too many times. Please try again later."
+      break;
     default:
       message =
         "Looks like something went wrong. Please ensure all fields are filled in and try again. If the error persists, please try again later.";

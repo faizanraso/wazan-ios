@@ -7,7 +7,6 @@ import { auth } from "../../../firebase";
 export default function Home() {
   const handleSignout = () => {
     signOut(auth);
-    
   };
 
   return (
