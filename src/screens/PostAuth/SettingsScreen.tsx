@@ -1,10 +1,10 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
-import { colours } from "../../shared/colours";
 import { signOut } from "firebase/auth";
 import { auth } from "../../../firebase";
+import { colours } from "../../shared/colours";
 
-export default function Home() {
+export default function SettingsScreen() {
   const handleSignout = () => {
     signOut(auth);
   };

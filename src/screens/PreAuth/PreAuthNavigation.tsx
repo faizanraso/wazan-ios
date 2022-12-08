@@ -16,6 +16,7 @@ export default function PreAuthNavigation() {
           headerBackTitle: "",
           headerTintColor: "white",
         }}
+        initialRouteName="Welcome"
       >
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
