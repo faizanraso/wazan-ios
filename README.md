@@ -1,2 +1,3 @@
-# wazan-ios
-Currently building a simple and useful fitness app 🔨
+# react-native-login
+
+React native login inspired by Twitter's design
